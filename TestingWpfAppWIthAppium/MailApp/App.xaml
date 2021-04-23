@@ -1,0 +1,19 @@
+﻿<Application x:Class="MailApp.App"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:telerik="http://schemas.telerik.com/2008/xaml/presentation"
+    StartupUri="MainWindow.xaml">
+    <Application.Resources>
+      <ResourceDictionary>
+          <ResourceDictionary.MergedDictionaries>
+            <ResourceDictionary Source="/Styles/GridViewStyle.xaml" />
+            <ResourceDictionary Source="/Styles/OutlookBarStyle.xaml" />
+            <ResourceDictionary Source="/Styles/RichTextBoxRibbonUIStyle.xaml" />
+          </ResourceDictionary.MergedDictionaries>
+            <telerik:IconSources x:Key="IconSources"
+                                 LightBasePath="pack://application:,,,/Telerik.Windows.Controls.RichTextBox;component/RichTextBoxUI/Images/MSOffice/"
+                                 DarkBasePath="pack://application:,,,/Telerik.Windows.Controls.RichTextBox;component/RichTextBoxUI/Images/MSOffice/Dark/"
+                                 ModernBasePath="pack://application:,,,/Telerik.Windows.Controls.RichTextBox;component/RichTextBoxUI/Images/MSOffice/Modern/" />
+      </ResourceDictionary>
+    </Application.Resources>
+</Application>

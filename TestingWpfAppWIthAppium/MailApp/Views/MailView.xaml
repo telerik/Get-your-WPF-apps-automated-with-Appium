@@ -1,0 +1,567 @@
+﻿<UserControl  x:Class="MailApp.MailView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:telerik="http://schemas.telerik.com/2008/xaml/presentation"
+             xmlns:telerikColorPickers="clr-namespace:Telerik.Windows.Controls.RichTextBoxUI.ColorPickers;assembly=Telerik.Windows.Controls.RichTextBox"
+             xmlns:local="clr-namespace:MailApp"
+             mc:Ignorable="d" 
+             d:DesignHeight="1000" d:DesignWidth="1000">
+    <UserControl.DataContext>
+        <local:MailViewModel/>
+    </UserControl.DataContext>
+    <UserControl.Resources>
+        <local:EmailRowStyleSelector x:Key="RowStyleSelector" BoldStyle="{StaticResource BoldStyle}" NormalStyle="{StaticResource NormalStyle}" />
+        <telerik:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+        <telerik:InvertedBooleanToVisibilityConverter x:Key="InvertedBooleanToVisibilityConverter" />
+        <telerik:InvertedBooleanConverter x:Key="InvertedBooleanConverter" />
+        <DataTemplate x:Key="OutlookSectionTitleTemplate">
+            <TextBlock Text="{Binding RelativeSource={RelativeSource AncestorType=telerik:RadOutlookBar}, Path=SelectedItem.Name}"/>
+        </DataTemplate>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <telerik:RadRichTextBoxRibbonUI x:Name="richTextBoxRibbonUI"
+                                        CollapseThresholdSize="0 0"
+                                        HelpButtonVisibility="Visible"
+                                        ApplicationButtonContent="File"
+                                        WindowIconVisibility="Visible"
+                                        Title="Inbox - Mark@telerikdomain.com"
+                                        MinimizeButtonVisibility="Visible"
+                                        telerik:KeyTipService.IsKeyTipsEnabled="True">
+            <telerik:EventToCommandBehavior.EventBindings>
+                <telerik:EventBinding Command="{Binding MenuOpenStateChangedCommand}" EventName="ApplicationMenuOpenStateChanged" CommandParameter="{Binding ElementName=richTextBoxRibbonUI}" />
+            </telerik:EventToCommandBehavior.EventBindings>
+            <telerik:RadRichTextBoxRibbonUI.Resources>
+                <telerik:FontFamiliesProvider x:Key="FontFamiliesProvider" />
+            </telerik:RadRichTextBoxRibbonUI.Resources>
+            <telerik:RadRichTextBoxRibbonUI.QuickAccessToolBar>
+                <telerik:QuickAccessToolBar>
+                    <telerik:RadRibbonButton Command="{Binding OpenDialogCommand}" 
+                                             CommandParameter="Save" 
+                                             Size="Small" Text="Save" 
+                                             SmallImage="{telerik:IconResource IconRelativePath=16/save.png,IconSources={StaticResource IconSources}}"/>
+                    <telerik:RadRibbonSplitButton Command="{Binding OpenDialogCommand}" 
+                                                  CommandParameter="Undo" 
+                                                  Size="Small" Text="Undo"
+                                                  SmallImage="{telerik:IconResource IconRelativePath=16/undo.png,IconSources={StaticResource IconSources}}">
+                        <telerik:RadRibbonSplitButton.DropDownContent>
+                            <telerik:MultipleUndoControl />
+                        </telerik:RadRibbonSplitButton.DropDownContent>
+                    </telerik:RadRibbonSplitButton>
+                    <telerik:RadRibbonButton Command="{Binding OpenDialogCommand}"
+                                             CommandParameter="Redo" 
+                                             Size="Small" Text="Redo"
+                                             SmallImage="{telerik:IconResource IconRelativePath=16/redo.png,IconSources={StaticResource IconSources}}" />
+                </telerik:QuickAccessToolBar>
+            </telerik:RadRichTextBoxRibbonUI.QuickAccessToolBar>
+            <telerik:RadRichTextBoxRibbonUI.Backstage>
+                <telerik:RadRibbonBackstage>
+                    <telerik:RadRibbonBackstageItem Header="Info" IsDefault="True">
+                        <StackPanel Margin="30">
+                            <TextBlock Text="Account Information" FontSize="38" 
+                                       Foreground="{telerik:Office2013Resource ResourceKey=AccentMainBrush}" />
+                        </StackPanel>
+                    </telerik:RadRibbonBackstageItem>
+                    <telerik:RadRibbonBackstageItem Header="Open &amp; Export">
+                        <StackPanel Margin="30">
+                            <TextBlock Text="Open" FontSize="38" Foreground="{telerik:Office2013Resource ResourceKey=AccentMainBrush}" />
+                        </StackPanel>
+                    </telerik:RadRibbonBackstageItem>
+                    <telerik:RadRibbonBackstageItem Header="Save As" IsSelectable="False" />
+                    <telerik:RadRibbonBackstageItem Header="Save Attachments" IsSelectable="False" IsEnabled="False" />
+                    <telerik:RadRibbonBackstageItem Header="Print">
+                        <StackPanel Margin="30">
+                            <TextBlock Text="Print" FontSize="38" Foreground="{telerik:Office2013Resource ResourceKey=AccentMainBrush}" />
+                        </StackPanel>
+                    </telerik:RadRibbonBackstageItem>
+                    <telerik:RadRibbonBackstageItem IsGroupSeparator="True" />
+                    <telerik:RadRibbonBackstageItem Header="Options" IsSelectable="False" />
+                    <telerik:RadRibbonBackstageItem Header="Exit" IsSelectable="False" />
+                </telerik:RadRibbonBackstage>
+            </telerik:RadRichTextBoxRibbonUI.Backstage>
+            <telerik:RadRibbonTab Header="Home" telerik:KeyTipService.AccessText="H">
+                <telerik:RadRibbonGroup Header="New">
+                    <telerik:RadCollapsiblePanel>
+                        <telerik:RadRibbonButton Text="New Email"
+                                             AllowDrop="True"
+                                             LargeImage="..\Images\NewEmail.png"
+                                             Size="Large"
+                                             telerik:ScreenTip.Title="New Item"
+                                             telerik:ScreenTip.Description="Create a New Item."
+                                             telerik:KeyTipService.AccessText="N"
+                                             Command="{Binding NewMailCommand}" />
+                    </telerik:RadCollapsiblePanel>
+                </telerik:RadRibbonGroup>
+                <telerik:RadRibbonGroup Header="Delete">
+                    <telerik:RadCollapsiblePanel>
+                        <telerik:RadRibbonButton Text="Delete"
+                                             AllowDrop="True"
+                                             LargeImage="..\Images\Delete.png"
+                                             Size="Large"
+                                             telerik:ScreenTip.Title="Delete Item"
+                                             telerik:ScreenTip.Description="Delete Item."
+                                             Command="{Binding OpenDialogCommand}"
+                                             CommandParameter="Delete"
+                                             telerik:KeyTipService.AccessText="D" />
+                    </telerik:RadCollapsiblePanel>
+                </telerik:RadRibbonGroup>
+                <telerik:RadRibbonGroup Header="Respond">
+                    <telerik:RadCollapsiblePanel>
+                        <telerik:RadRibbonButton Text="Reply"
+                                             LargeImage="..\Images\Reply.png"
+                                             Command="{Binding ReplyCommand}"
+                                             Size="Large"
+                                             CollapseToSmall="WhenGroupIsMedium"
+                                             telerik:ScreenTip.Title="Reply"
+                                             telerik:ScreenTip.Description="Reply to the sender of this message."
+                                             telerik:KeyTipService.AccessText="R"
+                                             AutomationProperties.AutomationId="buttonReply"/>
+                        <telerik:RadRibbonButton Text="Reply All"
+                                             LargeImage="..\Images\ReplyAll.png"
+                                             Size="Large"
+                                             Command="{Binding ReplyAllCommand}"
+                                             CollapseToSmall="WhenGroupIsMedium" telerik:ScreenTip.Title="Reply All"
+                                             telerik:ScreenTip.Description="Reply to the sender and all other recipients of this message."
+                                             telerik:KeyTipService.AccessText="R"
+                                             AutomationProperties.AutomationId="buttonReplyAll"/>
+                        <telerik:RadRibbonButton Text="Forward"
+                                             Command="{Binding ForwardCommand}"
+                                             LargeImage="..\Images\Forward.png"
+                                             Size="Large"
+                                             CollapseToSmall="WhenGroupIsMedium" telerik:ScreenTip.Title="Forward"
+                                             telerik:ScreenTip.Description="Forward this item to someone else."
+                                             telerik:KeyTipService.AccessText="F"
+                                             AutomationProperties.AutomationId="buttonForward"/>
+                    </telerik:RadCollapsiblePanel>
+                </telerik:RadRibbonGroup>
+                <telerik:RadRibbonGroup Header="Tags">
+                    <telerik:RadCollapsiblePanel>
+                        <telerik:RadRibbonButton Text="Unread/Read"
+                                             LargeImage="..\Images\ReadUnread.png"
+                                             Size="Large"
+                                             Command="{Binding MarkUnreadReadCommand}"
+                                             CollapseToSmall="WhenGroupIsMedium" telerik:ScreenTip.Title="Unread/Read"
+                                             telerik:ScreenTip.Description="Mark this item as read or unread."
+                                             telerik:KeyTipService.AccessText="Q" />
+                        <telerik:RadRibbonDropDownButton Text="Categorize"
+                                                  LargeImage="..\Images\Categorize.png"
+                                                  Size="Large"
+                                                  telerik:ScreenTip.Title="Gategorize"
+                                                  telerik:ScreenTip.Description="Categorize this item. Categories applied to a conversation will be applied to all current and future items in the converstation."
+                                                  telerik:KeyTipService.AccessText="N">
+                            <telerik:RadRibbonDropDownButton.DropDownContent>
+                                <telerik:RadContextMenu BorderThickness="0" IconColumnWidth="25">
+                                    <telerik:RadMenuItem Header="Red Category" Command="{Binding OpenDialogCommand}" CommandParameter="Red Category">
+                                        <telerik:RadMenuItem.Icon>
+                                            <Image Source="..\Images\red_category.png" Width="16" />
+                                        </telerik:RadMenuItem.Icon>
+                                    </telerik:RadMenuItem>
+                                    <telerik:RadMenuItem Header="Green Category" Command="{Binding OpenDialogCommand}" CommandParameter="Green Category">
+                                        <telerik:RadMenuItem.Icon>
+                                            <Image Source="..\Images\green_category.png" Width="16" />
+                                        </telerik:RadMenuItem.Icon>
+                                    </telerik:RadMenuItem>
+                                    <telerik:RadMenuItem Header="Blue Category" Command="{Binding OpenDialogCommand}" CommandParameter="Blue Category">
+                                        <telerik:RadMenuItem.Icon>
+                                            <Image Source="..\Images\blue_category.png" Width="16" />
+                                        </telerik:RadMenuItem.Icon>
+                                    </telerik:RadMenuItem>
+                                    <telerik:RadMenuSeparatorItem/>
+                                    <telerik:RadMenuItem Header="All Categories" Command="{Binding OpenDialogCommand}" CommandParameter="All Categories">
+                                        <telerik:RadMenuItem.Icon>
+                                            <Image Source="..\Images\all_categories.png" Width="16" />
+                                        </telerik:RadMenuItem.Icon>
+                                    </telerik:RadMenuItem>
+                                    <telerik:RadMenuItem Header="Set Quick Click" telerik:KeyTipService.AccessText="Q" Command="{Binding OpenDialogCommand}" CommandParameter="Set Quick Click" />
+                                </telerik:RadContextMenu>
+                            </telerik:RadRibbonDropDownButton.DropDownContent>
+                        </telerik:RadRibbonDropDownButton>
+                        <telerik:RadRibbonDropDownButton Text="Follow Up"
+                                                  LargeImage="..\Images\FollowUp.png"
+                                                  Size="Large"
+                                                  telerik:ScreenTip.Title="Follow Up"
+                                                  telerik:ScreenTip.Description="Set a flag to remind you to follow up on this item later. Flagged items appear in the To-Do Bar, Daily Task List and Tasks."
+                                                  telerik:KeyTipService.AccessText="N">
+                            <telerik:RadRibbonDropDownButton.DropDownContent>
+                                <telerik:RadContextMenu BorderThickness="0" IconColumnWidth="25">
+                                    <telerik:RadMenuItem Header="Today" telerik:KeyTipService.AccessText="T" Command="{Binding OpenDialogCommand}" CommandParameter="Today">
+                                        <telerik:RadMenuItem.Icon>
+                                            <Image Source="..\Images\today.png" Width="16" />
+                                        </telerik:RadMenuItem.Icon>
+                                    </telerik:RadMenuItem>
+                                    <telerik:RadMenuItem Header="Tomorrow" telerik:KeyTipService.AccessText="o" Command="{Binding OpenDialogCommand}" CommandParameter="Tomorrow">
+                                        <telerik:RadMenuItem.Icon>
+                                            <Image Source="..\Images\tomorrow.png" Width="16" />
+                                        </telerik:RadMenuItem.Icon>
+                                    </telerik:RadMenuItem>
+                                    <telerik:RadMenuItem Header="This Week" telerik:KeyTipService.AccessText="W" Command="{Binding OpenDialogCommand}" CommandParameter="This Week">
+                                        <telerik:RadMenuItem.Icon>
+                                            <Image Source="..\Images\week.png" Width="16" />
+                                        </telerik:RadMenuItem.Icon>
+                                    </telerik:RadMenuItem>
+                                    <telerik:RadMenuItem Header="Next Week" telerik:KeyTipService.AccessText="N" Command="{Binding OpenDialogCommand}" CommandParameter="Next Week">
+                                        <telerik:RadMenuItem.Icon>
+                                            <Image Source="..\Images\week.png" Width="16" />
+                                        </telerik:RadMenuItem.Icon>
+                                    </telerik:RadMenuItem>
+                                    <telerik:RadMenuItem Header="No Date" telerik:KeyTipService.AccessText="a" Command="{Binding OpenDialogCommand}" CommandParameter="No Date">
+                                        <telerik:RadMenuItem.Icon>
+                                            <Image Source="..\Images\today.png" Width="16" />
+                                        </telerik:RadMenuItem.Icon>
+                                    </telerik:RadMenuItem>
+                                    <telerik:RadMenuItem Header="Custom" telerik:KeyTipService.AccessText="C" Command="{Binding OpenDialogCommand}" CommandParameter="Custom">
+                                        <telerik:RadMenuItem.Icon>
+                                            <Image Source="..\Images\today.png" Width="16" />
+                                        </telerik:RadMenuItem.Icon>
+                                    </telerik:RadMenuItem>
+                                    <telerik:RadMenuSeparatorItem/>
+                                    <telerik:RadMenuItem Header="Add Reminder" telerik:KeyTipService.AccessText="R" Command="{Binding OpenDialogCommand}" CommandParameter="Add Reminder">
+                                        <telerik:RadMenuItem.Icon>
+                                            <Image Source="..\Images\reminder.png" Width="16" />
+                                        </telerik:RadMenuItem.Icon>
+                                    </telerik:RadMenuItem>
+                                    <telerik:RadMenuItem Header="Mark Complete" telerik:KeyTipService.AccessText="M" Command="{Binding OpenDialogCommand}" CommandParameter="Mark Complete">
+                                        <telerik:RadMenuItem.Icon>
+                                            <Image Source="..\Images\complete.png" Width="16" />
+                                        </telerik:RadMenuItem.Icon>
+                                    </telerik:RadMenuItem>
+                                    <telerik:RadMenuItem Header="Clear Flag" telerik:KeyTipService.AccessText="e" Command="{Binding OpenDialogCommand}" CommandParameter="Clear Flag" />
+                                    <telerik:RadMenuItem Header="Set Quick Click" telerik:KeyTipService.AccessText="Q" Command="{Binding OpenDialogCommand}" CommandParameter="Set Quick Click" />
+                                </telerik:RadContextMenu>
+                            </telerik:RadRibbonDropDownButton.DropDownContent>
+                        </telerik:RadRibbonDropDownButton>
+                    </telerik:RadCollapsiblePanel>
+                </telerik:RadRibbonGroup>
+            </telerik:RadRibbonTab>
+            <telerik:RadRibbonTab Header="Message" ContextualGroupName="compose" DataContext="{Binding Commands, ElementName=editableRichTextBox}">
+                <telerik:RadRibbonGroup Header="Clipboard">
+                    <telerik:RadCollapsiblePanel>
+                        <telerik:RadRibbonButton CollapseToSmall="WhenGroupIsMedium" telerik:ScreenTip.Description="Cut the selection and put it on the Clipboard." telerik:RadRichTextBoxRibbonUI.RichTextCommand="{Binding CutCommand}" Size="Medium" SmallImage="{telerik:IconResource IconRelativePath=16/cut.png,IconSources={StaticResource IconSources}}" Text="Cut" telerik:ScreenTip.Title="Cut" />
+                        <telerik:RadRibbonButton CollapseToSmall="WhenGroupIsMedium" telerik:ScreenTip.Description="Copy the selection and put it on the Clipboard." telerik:RadRichTextBoxRibbonUI.RichTextCommand="{Binding CopyCommand}" Size="Medium" SmallImage="{telerik:IconResource IconRelativePath=16/copy.png,IconSources={StaticResource IconSources}}" Text="Copy" telerik:ScreenTip.Title="Copy" />
+                        <telerik:RadRibbonButton CollapseToSmall="WhenGroupIsMedium" telerik:ScreenTip.Description="Paste the contents of the Clipboard." telerik:RadRichTextBoxRibbonUI.RichTextCommand="{Binding PasteCommand}" Size="Medium" SmallImage="{telerik:IconResource IconRelativePath=16/paste.png,IconSources={StaticResource IconSources}}" Text="Paste" telerik:ScreenTip.Title="Paste" />
+                    </telerik:RadCollapsiblePanel>
+                </telerik:RadRibbonGroup>
+                <telerik:RadRibbonGroup DialogLauncherVisibility="Visible" telerik:ScreenTip.Description="Show the font dialog box." Header="Font" telerik:ScreenTip.Icon="{telerik:IconResource IconRelativePath=FontDialog.png,IconSources={StaticResource IconSources}}" telerik:RadRichTextBoxRibbonUI.RichTextCommand="{Binding ShowFontPropertiesDialogCommand}" telerik:ScreenTip.Title="Font">
+                    <telerik:RadOrderedWrapPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <telerik:RadRibbonComboBox CanAutocompleteSelectItems="False" CanKeyboardNavigationSelectItems="False" CommandParameter="{Binding SelectedValue, RelativeSource={RelativeSource Self}}" telerik:ScreenTip.Description="Change the font family." IsReadOnly="True" ItemsSource="{Binding RegisteredFonts, Source={StaticResource FontFamiliesProvider}}" MaxDropDownHeight="400" OpenDropDownOnFocus="True" telerik:RadRichTextBoxRibbonUI.RichTextCommand="{Binding ChangeFontFamilyCommand}" telerik:ScreenTip.Title="Font" Width="132" />
+                            <telerik:RadRibbonComboBox CanAutocompleteSelectItems="False" CanKeyboardNavigationSelectItems="False" CommandParameter="{Binding SelectedItem.Tag, RelativeSource={RelativeSource Self}}" telerik:ScreenTip.Description="Change the font size." IsEditable="True" IsReadOnly="True" IsTextSearchEnabled="False" MaxDropDownHeight="400" OpenDropDownOnFocus="True" telerik:RadRichTextBoxRibbonUI.RichTextCommand="{Binding ChangeFontSizeCommand}" telerik:ScreenTip.Title="Font Size" Width="65">
+                                <telerik:RadRibbonComboBoxItem Content="8" Tag="10.67" />
+                                <telerik:RadRibbonComboBoxItem Content="9" Tag="12" />
+                                <telerik:RadRibbonComboBoxItem Content="10" Tag="13.34" />
+                                <telerik:RadRibbonComboBoxItem Content="11" Tag="14.67" />
+                                <telerik:RadRibbonComboBoxItem Content="12" Tag="16" />
+                                <telerik:RadRibbonComboBoxItem Content="14" Tag="18.67" />
+                                <telerik:RadRibbonComboBoxItem Content="16" Tag="21.33" />
+                                <telerik:RadRibbonComboBoxItem Content="18" Tag="24" />
+                                <telerik:RadRibbonComboBoxItem Content="20" Tag="26.67" />
+                                <telerik:RadRibbonComboBoxItem Content="22" Tag="29.33" />
+                                <telerik:RadRibbonComboBoxItem Content="24" Tag="32" />
+                                <telerik:RadRibbonComboBoxItem Content="26" Tag="34.67" />
+                                <telerik:RadRibbonComboBoxItem Content="28" Tag="37.33" />
+                                <telerik:RadRibbonComboBoxItem Content="36" Tag="48" />
+                                <telerik:RadRibbonComboBoxItem Content="48" Tag="64" />
+                                <telerik:RadRibbonComboBoxItem Content="72" Tag="96" />
+                            </telerik:RadRibbonComboBox>
+                        </StackPanel>
+                        <telerik:RadButtonGroup>
+                            <telerik:RadRibbonButton telerik:ScreenTip.Description="Increase the font size." telerik:RadRichTextBoxRibbonUI.RichTextCommand="{Binding IncrementFontSizeCommand}" Size="Small" SmallImage="{telerik:IconResource IconRelativePath=16/font-increasesize.png,IconSources={StaticResource IconSources}}" telerik:ScreenTip.Title="Grow Font" />
+                            <telerik:RadRibbonButton telerik:ScreenTip.Description="Decrease the font size." telerik:RadRichTextBoxRibbonUI.RichTextCommand="{Binding DecrementFontSizeCommand}" Size="Small" SmallImage="{telerik:IconResource IconRelativePath=16/font-decreasesize.png,IconSources={StaticResource IconSources}}" telerik:ScreenTip.Title="Shrink Font" />
+                        </telerik:RadButtonGroup>
+                        <telerik:RadButtonGroup>
+                            <telerik:RadRibbonButton telerik:ScreenTip.Description="Clear all the formatting from the selection, leaving only the plain text." telerik:RadRichTextBoxRibbonUI.RichTextCommand="{Binding ClearAllFormattingCommand}" Size="Small" SmallImage="{telerik:IconResource IconRelativePath=16/ClearFormatting16.png,IconSources={StaticResource IconSources}}" telerik:ScreenTip.Title="Clear All Formatting" />
+                        </telerik:RadButtonGroup>
+                        <telerik:RadButtonGroup>
+                            <telerik:RadRibbonToggleButton telerik:ScreenTip.Description="Make the selected text bold." telerik:RadRichTextBoxRibbonUI.RichTextCommand="{Binding ToggleBoldCommand}" Size="Small" SmallImage="{telerik:IconResource IconRelativePath=16/bold.png,IconSources={StaticResource IconSources}}" telerik:ScreenTip.Title="Bold" />
+                            <telerik:RadRibbonToggleButton telerik:ScreenTip.Description="Italicize the selected text." telerik:RadRichTextBoxRibbonUI.RichTextCommand="{Binding ToggleItalicCommand}" Size="Small" SmallImage="{telerik:IconResource IconRelativePath=16/italic.png,IconSources={StaticResource IconSources}}" telerik:ScreenTip.Title="Italic" />
+                            <telerik:RadRibbonSplitButton telerik:ScreenTip.Description="Underline the selected text." IsToggle="True" telerik:RadRichTextBoxRibbonUI.RichTextCommand="{Binding ToggleUnderlineCommand}" SmallImage="{telerik:IconResource IconRelativePath=16/underline.png,IconSources={StaticResource IconSources}}" telerik:ScreenTip.Title="Underline">
+                                <telerik:RadRibbonSplitButton.DropDownContent>
+                                    <telerik:RadGallery Height="210" ItemWidth="156" ItemHeight="26" telerik:RadRichTextBoxRibbonUI.RichTextCommand="{Binding ChangeUnderlineDecorationCommand}" ViewportWidth="157">
+                                        <telerik:RadGalleryItem Image="{telerik:IconResource IconRelativePath=underline1.png,IconSources={StaticResource IconSources}}" Tag="Line" />
+                                        <telerik:RadGalleryItem Image="{telerik:IconResource IconRelativePath=underline2.png,IconSources={StaticResource IconSources}}" Tag="DoubleLine" />
+                                        <telerik:RadGalleryItem Image="{telerik:IconResource IconRelativePath=underline3.png,IconSources={StaticResource IconSources}}" Tag="ThickLine" />
+                                        <telerik:RadGalleryItem Image="{telerik:IconResource IconRelativePath=underline4.png,IconSources={StaticResource IconSources}}" Tag="DottedLine" />
+                                        <telerik:RadGalleryItem Image="{telerik:IconResource IconRelativePath=underline5.png,IconSources={StaticResource IconSources}}" Tag="DashedLine" />
+                                        <telerik:RadGalleryItem Image="{telerik:IconResource IconRelativePath=underline6.png,IconSources={StaticResource IconSources}}" Tag="DotDashedLine" />
+                                        <telerik:RadGalleryItem Image="{telerik:IconResource IconRelativePath=underline7.png,IconSources={StaticResource IconSources}}" Tag="DotDotDashedLine" />
+                                        <telerik:RadGalleryItem Image="{telerik:IconResource IconRelativePath=underline8.png,IconSources={StaticResource IconSources}}" Tag="Wave" />
+                                    </telerik:RadGallery>
+                                </telerik:RadRibbonSplitButton.DropDownContent>
+                            </telerik:RadRibbonSplitButton>
+                            <telerik:RadRibbonToggleButton telerik:ScreenTip.Description="Draw a line through the middle of the selected text." telerik:RadRichTextBoxRibbonUI.RichTextCommand="{Binding ToggleStrikethroughCommand}" Size="Small" SmallImage="{telerik:IconResource IconRelativePath=16/Strikethrough16.png,IconSources={StaticResource IconSources}}" telerik:ScreenTip.Title="Strikethrough" />
+                            <telerik:RadRibbonToggleButton telerik:ScreenTip.Description="Create small letters below the text baseline." telerik:RadRichTextBoxRibbonUI.RichTextCommand="{Binding ToggleSubscriptCommand}" Size="Small" SmallImage="{telerik:IconResource IconRelativePath=16/subscript.png,IconSources={StaticResource IconSources}}" telerik:ScreenTip.Title="Subscript" />
+                            <telerik:RadRibbonToggleButton telerik:ScreenTip.Description="Create small text above the line of text." telerik:RadRichTextBoxRibbonUI.RichTextCommand="{Binding ToggleSuperscriptCommand}" Size="Small" SmallImage="{telerik:IconResource IconRelativePath=16/superscript.png,IconSources={StaticResource IconSources}}" telerik:ScreenTip.Title="Superscript" />
+                        </telerik:RadButtonGroup>
+                        <telerik:RadButtonGroup>
+                            <telerikColorPickers:FormattingColorPicker ActiveColor="Yellow" AutomaticColor="Transparent" BorderThickness="0" telerik:ScreenTip.Description="Make text look like it was marked with a highlighter pen." Image="{telerik:IconResource IconRelativePath=16/highlight.png,IconSources={StaticResource IconSources}}" NoColorText="No color" telerik:RadRichTextBoxRibbonUI.RichTextCommand="{Binding ChangeFontHighlightColorCommand}" telerik:ScreenTip.Title="Text Highlight Color" />
+                            <telerikColorPickers:FormattingColorPicker ActiveColor="Red" BorderThickness="0" telerik:ScreenTip.Description="Change the text color." Image="{telerik:IconResource IconRelativePath=16/FontForeColor.png,IconSources={StaticResource IconSources}}" telerik:RadRichTextBoxRibbonUI.RichTextCommand="{Binding ChangeFontForeColorCommand}" telerik:ScreenTip.Title="Font Color" />
+                        </telerik:RadButtonGroup>
+                    </telerik:RadOrderedWrapPanel>
+                </telerik:RadRibbonGroup>
+                <telerik:RadRibbonGroup DialogLauncherVisibility="Visible" telerik:ScreenTip.Description="Show the Paragraph dialog box." Header="Paragraph" telerik:ScreenTip.Icon="{telerik:IconResource IconRelativePath=PropertiesDialog.png,IconSources={StaticResource IconSources}}" telerik:RadRichTextBoxRibbonUI.RichTextCommand="{Binding ShowParagraphPropertiesDialogCommand}" telerik:ScreenTip.Title="Paragraph">
+                    <telerik:RadOrderedWrapPanel>
+                        <telerik:RadButtonGroup>
+                            <telerik:RadRibbonToggleButton telerik:ScreenTip.Description="Start a bulleted list." telerik:RadRichTextBoxRibbonUI.RichTextCommand="{Binding ToggleBulletsCommand}" Size="Small" SmallImage="{telerik:IconResource IconRelativePath=16/list-bullets.png,IconSources={StaticResource IconSources}}" telerik:ScreenTip.Title="Bullets" />
+                            <telerik:RadRibbonToggleButton telerik:ScreenTip.Description="Start a numbered list." telerik:RadRichTextBoxRibbonUI.RichTextCommand="{Binding ToggleNumberedCommand}" Size="Small" SmallImage="{telerik:IconResource IconRelativePath=16/list-numbered.png,IconSources={StaticResource IconSources}}" telerik:ScreenTip.Title="Numbering" />
+                            <telerik:RadRibbonDropDownButton telerik:ScreenTip.Description="Start a multilevel list. Click the arrow to choose different multilevel list styles." Size="Small" SmallImage="{telerik:IconResource IconRelativePath=16/MultilevelList.png,IconSources={StaticResource IconSources}}" telerik:ScreenTip.Title="Multilevel List">
+                                <telerik:RadRibbonDropDownButton.DropDownContent>
+                                    <StackPanel>
+                                        <ScrollViewer MaxHeight="565">
+                                            <StackPanel>
+                                                <telerik:RadGroupHeader Content="List Library" />
+                                                <telerik:RadGallery Height="176" ItemWidth="88" ItemHeight="88" telerik:RadRichTextBoxRibbonUI.RichTextCommand="{Binding ChangeListStyleCommand}" ScrollViewer.VerticalScrollBarVisibility="Disabled" ViewportWidth="266">
+                                                    <telerik:RadGalleryItem Image="{telerik:IconResource IconRelativePath=MultilevelListNone.png,IconSources={StaticResource IconSources}}" Tag="None" />
+                                                    <telerik:RadGalleryItem Image="{telerik:IconResource IconRelativePath=MultilevelListBulleted.png,IconSources={StaticResource IconSources}}" Tag="Bulleted" />
+                                                    <telerik:RadGalleryItem Image="{telerik:IconResource IconRelativePath=MultilevelListNumbered.png,IconSources={StaticResource IconSources}}" Tag="Numbered" />
+                                                    <telerik:RadGalleryItem Image="{telerik:IconResource IconRelativePath=MultilevelListNumberedParenthesis.png,IconSources={StaticResource IconSources}}" Tag="NumberedParenthesis" />
+                                                    <telerik:RadGalleryItem Image="{telerik:IconResource IconRelativePath=MultilevelListNumberedHierarchical.png,IconSources={StaticResource IconSources}}" Tag="NumberedHierarchical" />
+                                                </telerik:RadGallery>
+                                                <telerik:ListStylesGallery AssociatedRichTextBox="{Binding AssociatedRichTextBox, Mode=OneWay}" />
+                                            </StackPanel>
+                                        </ScrollViewer>
+                                        <telerik:RadRibbonButton HorizontalAlignment="Stretch" telerik:RadRichTextBoxRibbonUI.RichTextCommand="{Binding ShowDefineNewListStyleDialogCommand}" Size="Medium" Text="Define New List Style ..." />
+                                    </StackPanel>
+                                </telerik:RadRibbonDropDownButton.DropDownContent>
+                            </telerik:RadRibbonDropDownButton>
+                        </telerik:RadButtonGroup>
+                        <telerik:RadButtonGroup>
+                            <telerik:RadRibbonButton telerik:ScreenTip.Description="Decrease the indent level of the paragraph." telerik:RadRichTextBoxRibbonUI.RichTextCommand="{Binding DecrementParagraphLeftIndentCommand}" Size="Small" SmallImage="{telerik:IconResource IconRelativePath=16/outdent.png,IconSources={StaticResource IconSources}}" telerik:ScreenTip.Title="Decrease Indent" />
+                            <telerik:RadRibbonButton telerik:ScreenTip.Description="Increase the indent level of the paragraph." telerik:RadRichTextBoxRibbonUI.RichTextCommand="{Binding IncrementParagraphLeftIndentCommand}" Size="Small" SmallImage="{telerik:IconResource IconRelativePath=16/indent.png,IconSources={StaticResource IconSources}}" telerik:ScreenTip.Title="Increase Indent" />
+                        </telerik:RadButtonGroup>
+                        <telerik:RadButtonGroup>
+                            <telerik:RadRibbonToggleButton telerik:ScreenTip.Description="Set the direction of text to be displayed from left to right." telerik:RadRichTextBoxRibbonUI.RichTextCommand="{Binding ChangeParagraphFlowDirectionCommand}" Size="Small" SmallImage="{telerik:IconResource IconRelativePath=16/LeftToRightFlowDirection.png,IconSources={StaticResource IconSources}}" Text="Left-to-Right Text Direction" telerik:ScreenTip.Title="Left-To-Right Text Direction">
+                                <telerik:RadRibbonToggleButton.CommandParameter>
+                                    <FlowDirection>LeftToRight</FlowDirection>
+                                </telerik:RadRibbonToggleButton.CommandParameter>
+                            </telerik:RadRibbonToggleButton>
+                            <telerik:RadRibbonToggleButton telerik:ScreenTip.Description="Set the direction of text to be displayed from right to left." telerik:RadRichTextBoxRibbonUI.RichTextCommand="{Binding ChangeParagraphFlowDirectionCommand}" Size="Small" SmallImage="{telerik:IconResource IconRelativePath=16/RightToLeftFlowDirection.png,IconSources={StaticResource IconSources}}" Text="Right-to-Left Text Direction" telerik:ScreenTip.Title="Right-To-Left Text Direction">
+                                <telerik:RadRibbonToggleButton.CommandParameter>
+                                    <FlowDirection>RightToLeft</FlowDirection>
+                                </telerik:RadRibbonToggleButton.CommandParameter>
+                            </telerik:RadRibbonToggleButton>
+                        </telerik:RadButtonGroup>
+                        <telerik:RadButtonGroup>
+                            <telerik:RadRibbonToggleButton telerik:ScreenTip.Description="Show paragraph marks and other hidden formatting symbols." telerik:RadRichTextBoxRibbonUI.RichTextCommand="{Binding ToggleFormattingSymbolsCommand}" Size="Small" SmallImage="{telerik:IconResource IconRelativePath=16/formatting-symbols.png,IconSources={StaticResource IconSources}}" telerik:ScreenTip.Title="Show/Hide Formatting Symbols" />
+                        </telerik:RadButtonGroup>
+                        <telerik:RadButtonGroup>
+                            <telerik:RadRibbonToggleButton CommandParameter="Left" telerik:ScreenTip.Description="Align text to the left." telerik:RadRichTextBoxRibbonUI.RichTextCommand="{Binding ChangeTextAlignmentCommand}" Size="Small" SmallImage="{telerik:IconResource IconRelativePath=16/alignleft.png,IconSources={StaticResource IconSources}}" Text="Align Left" telerik:ScreenTip.Title="Align Text Left" />
+                            <telerik:RadRibbonToggleButton CommandParameter="Center" telerik:ScreenTip.Description="Center text." telerik:RadRichTextBoxRibbonUI.RichTextCommand="{Binding ChangeTextAlignmentCommand}" Size="Small" SmallImage="{telerik:IconResource IconRelativePath=16/aligncenter.png,IconSources={StaticResource IconSources}}" Text="Center" telerik:ScreenTip.Title="Center" />
+                            <telerik:RadRibbonToggleButton CommandParameter="Right" telerik:ScreenTip.Description="Align text to the right." telerik:RadRichTextBoxRibbonUI.RichTextCommand="{Binding ChangeTextAlignmentCommand}" Size="Small" SmallImage="{telerik:IconResource IconRelativePath=16/alignright.png,IconSources={StaticResource IconSources}}" Text="Align Right" telerik:ScreenTip.Title="Align Text Right" />
+                            <telerik:RadRibbonToggleButton CommandParameter="Justify" telerik:ScreenTip.Description="Align text to both left and right margins, adding extra space between words as necessary." telerik:RadRichTextBoxRibbonUI.RichTextCommand="{Binding ChangeTextAlignmentCommand}" Size="Small" SmallImage="{telerik:IconResource IconRelativePath=16/alignjustify.png,IconSources={StaticResource IconSources}}" Text="Justify" telerik:ScreenTip.Title="Justify" />
+                        </telerik:RadButtonGroup>
+                        <telerik:RadButtonGroup>
+                            <telerikColorPickers:FormattingColorPicker ActiveColor="Transparent" AutomaticColor="Transparent" BorderThickness="0" telerik:ScreenTip.Description="Color the background behind the selected paragraph." Image="{telerik:IconResource IconRelativePath=16/ParagraphBackgroundColor.png,IconSources={StaticResource IconSources}}" NoColorText="No color" telerik:RadRichTextBoxRibbonUI.RichTextCommand="{Binding ChangeParagraphBackgroundColorCommand}" telerik:ScreenTip.Title="Shading" />
+                        </telerik:RadButtonGroup>
+                    </telerik:RadOrderedWrapPanel>
+                </telerik:RadRibbonGroup>
+                <telerik:RadRibbonGroup Header="Editing &amp; Proofing">
+                    <telerik:RadCollapsiblePanel>
+                        <telerik:RadRibbonButton CollapseToSmall="WhenGroupIsMedium" telerik:ScreenTip.Description="Find or replace text in the document." telerik:RadRichTextBoxRibbonUI.RichTextCommand="{Binding ShowFindReplaceDialogCommand}" Size="Medium" SmallImage="{telerik:IconResource IconRelativePath=16/Find.png,IconSources={StaticResource IconSources}}" Text="Find/Replace" telerik:ScreenTip.Title="Find/Replace" />
+                        <telerik:RadRibbonToggleButton CollapseToSmall="WhenGroupIsMedium" telerik:ScreenTip.Description="Enable/Disable spell checking." telerik:RadRichTextBoxRibbonUI.RichTextCommand="{Binding ToggleSpellCheckingCommand}" Size="Medium" SmallImage="{telerik:IconResource IconRelativePath=16/EnableSpellCheck.png,IconSources={StaticResource IconSources}}" Text="Enable Spell Check" telerik:ScreenTip.Title="Spell Check" />
+                        <telerik:RadRibbonButton CollapseToSmall="WhenGroupIsMedium" telerik:ScreenTip.Description="Open context menu on next spelling error." telerik:RadRichTextBoxRibbonUI.RichTextCommand="{Binding OpenContextMenuOnNextSpellingErrorCommand}" Size="Medium" SmallImage="{telerik:IconResource IconRelativePath=16/FindNextSpellingError.png,IconSources={StaticResource IconSources}}" Text="Find Next Error" telerik:ScreenTip.Title="Next Error" />
+                    </telerik:RadCollapsiblePanel>
+                </telerik:RadRibbonGroup>
+                <telerik:RadRibbonGroup Header="Styles">
+                    <telerik:StylesGallery AssociatedRichTextBox="{Binding AssociatedRichTextBox, Mode=OneWay}" />
+                    <telerik:RadRibbonButton telerik:ScreenTip.Description="Change the set of styles, colors, fonts and paragraph spacing used in this document." LargeImage="{telerik:IconResource IconRelativePath=32/ChangeStyles.png,IconSources={StaticResource IconSources}}" telerik:RadRichTextBoxRibbonUI.RichTextCommand="{Binding ShowManageStylesDialogCommand}" Size="Large" Text="Change Styles" telerik:ScreenTip.Title="Change Styles" />
+                </telerik:RadRibbonGroup>
+            </telerik:RadRibbonTab>
+            <telerik:RadRichTextBoxRibbonUI.ContextualGroups>
+                <telerik:RadRibbonContextualGroup x:Name="compose"
+                                                  Header="COMPOSE TOOLS" 
+                                                  Color="Green" 
+                                                  IsActive="{Binding IsInEditMode}" />
+            </telerik:RadRichTextBoxRibbonUI.ContextualGroups>
+        </telerik:RadRichTextBoxRibbonUI>
+
+        <telerik:RadDocking BorderThickness="0" Grid.Row="1" RetainPaneSizeMode="DockingAndFloating">
+            <telerik:EventToCommandBehavior.EventBindings>
+                <telerik:EventBinding Command="{Binding PreviewShowCompassCommand}" EventName="PreviewShowCompass" PassEventArgsToCommand="True" />
+            </telerik:EventToCommandBehavior.EventBindings>
+            <telerik:RadDocking.DocumentHost>
+                <telerik:RadSplitContainer>
+                    <telerik:RadPaneGroup>
+                        <telerik:RadPane Header="Content" CanUserClose="False" CanUserPin="False" CanFloat="False" Visibility="Collapsed">
+                            <Grid Visibility="{Binding Converter={StaticResource BooleanToVisibilityConverter}, Path=HasSelectedEmail}">
+                                <Grid Margin="9">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="*" />
+                                    </Grid.RowDefinitions>
+                                    <StackPanel Visibility="{Binding Converter={StaticResource InvertedBooleanToVisibilityConverter}, Path=IsInEditMode}">
+                                        <StackPanel Orientation="Horizontal" Margin="0 0 0 5">
+                                            <telerik:RadRibbonButton Text="Reply" Command="{Binding ReplyCommand}" LargeImage="..\Images\Reply.png" Size="Medium" />
+                                            <telerik:RadRibbonButton Text="Reply All" Command="{Binding ReplyAllCommand}" LargeImage="..\Images\ReplyAll.png" Size="Medium" />
+                                            <telerik:RadRibbonButton Text="Forward" Command="{Binding ForwardCommand}" LargeImage="..\Images\Forward.png" Size="Medium" />
+                                        </StackPanel>
+                                        <StackPanel Orientation="Horizontal" TextBlock.FontSize="12">
+                                            <TextBlock Text="From: " />
+                                            <TextBlock Text="{Binding SelectedEmail.Sender}" />
+                                            <Rectangle Width="1" Fill="#FFD4D4D4" Margin="10 0" />
+                                            <TextBlock Text="To: " />
+                                            <TextBlock Text="{Binding SelectedEmail.Recipient}" />
+                                        </StackPanel>
+                                        <DockPanel LastChildFill="False" Margin="0 3 0 0">
+                                            <TextBlock Text="Topic:" FontWeight="Bold" DockPanel.Dock="Left" FontSize="15" />
+                                            <TextBlock Text="{Binding SelectedEmail.Subject}" Margin="5 0 0 0" FontWeight="Bold" FontSize="15" DockPanel.Dock="Left" />
+                                            <TextBlock Text="{Binding SelectedEmail.Received}" DockPanel.Dock="Right" FontSize="12" />
+                                        </DockPanel>
+
+                                        <Border Background="#FFD4D4D4" Height="1" Margin="0 2 0 10" />
+                                    </StackPanel>
+                                    <Grid Visibility="{Binding Converter={StaticResource BooleanToVisibilityConverter}, Path=IsInEditMode}" Margin="0 0 0 2">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="52" />
+                                            <ColumnDefinition Width="55" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition />
+                                        </Grid.RowDefinitions>
+
+                                        <StackPanel Orientation="Horizontal" Grid.ColumnSpan="3" Margin="0 0 0 5">
+                                            <telerik:RadRibbonButton Text="Pop Out" Command="{Binding PopOutCommand}" FontSize="15" LargeImage="..\Images\Popout.png" MinHeight="0" FontFamily="Calibri" />
+                                            <telerik:RadRibbonButton Text="Discard" FontSize="15" Command="{Binding DiscardCommand}" LargeImage="..\Images\Discard.png"  MinHeight="0" FontFamily="Calibri" />
+                                        </StackPanel>
+
+                                        <telerik:RadButton Grid.Row="1" Grid.RowSpan="3" Width="42" Margin="0 0 10 0" Height="69" VerticalAlignment="Top" VerticalContentAlignment="Top" Padding="4 6 4 4" FontSize="13"
+                                                           Command="{Binding OpenDialogCommand}" CommandParameter="Send" AutomationProperties.AutomationId="buttonSendEmail">
+                                            <StackPanel>
+                                                <Image Source="..\Images\NewEmail.png" Width="32" Height="32" />
+                                                <TextBlock Text="Send" TextAlignment="Center" />
+                                            </StackPanel>
+                                        </telerik:RadButton>
+
+                                        <TextBlock Grid.Row="1" Grid.Column="1" Text="To..." VerticalAlignment="Center" FontSize="13" />
+                                        <TextBox Grid.Row="1" Grid.Column="2" Text="{Binding EditableRecipient}" Height="23" MinHeight="23" Margin="0 5 0 5" FontSize="13" />
+
+                                        <TextBlock Grid.Column="1" Grid.Row="2" Text="Cc..." VerticalAlignment="Center" />
+                                        <TextBox Grid.Column="2" Grid.Row="2" Text="{Binding EditableCarbonCopy}" Height="23" MinHeight="23" Margin="0 5 0 4" FontSize="13" />
+
+                                        <TextBlock Grid.Column="1" Grid.Row="3" Text="Subject" VerticalAlignment="Center" FontSize="13" />
+                                        <TextBox Grid.Column="2" Grid.Row="3" Text="{Binding EditableSubject}" Height="23" MinHeight="23" Margin="0 4 0 4" FontSize="13" />
+                                    </Grid>
+
+                                    <telerik:XamlDataProvider RichTextBox="{Binding ElementName=editableRichTextBox}" Xaml="{Binding OriginalContent, Mode=TwoWay}"  DataContext="{Binding}" />
+
+                                    <telerik:RadRichTextBox x:Name="editableRichTextBox" Grid.Row="2"
+                                                            IsReadOnly="{Binding IsInEditMode, Converter={StaticResource InvertedBooleanConverter}}" Margin="2" Padding="20"
+                                                            IsSpellCheckingEnabled="{Binding IsInEditMode}"/>
+                                </Grid>
+                            </Grid>
+                        </telerik:RadPane>
+                    </telerik:RadPaneGroup>
+                </telerik:RadSplitContainer>
+            </telerik:RadDocking.DocumentHost>
+            <telerik:RadSplitContainer>
+                <telerik:RadPaneGroup>
+                    <telerik:RadPane PaneHeaderVisibility="Collapsed" CanUserClose="False" CanUserPin="False" CanFloat="False" CanDockInDocumentHost="False" local:ConditionalDockingHelper.PaneType="Restricted">
+                        <telerik:RadOutlookBar x:Name="OutlookBar"
+                                               IsContentPreserved="True"
+                                               Grid.Row="1"
+                                               HorizontalAlignment="Stretch"
+                                               IsMinimizable="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type telerik:RadPane}}, Path=IsPinned}"
+                                               local:OutlookBarExtensions.IsWidthLinked="True"
+                                               IsVerticalResizerVisible="False"
+                                               MinimizedWidth="46"
+                                               TitleTemplate="{StaticResource OutlookSectionTitleTemplate}"
+                                               ItemsSource="{Binding OutlookSections}"
+                                               SelectedItem="{Binding SelectedOutlookSection, Mode=TwoWay}"
+                                               ContentTemplate="{StaticResource OutlookSectionMailContentTemplate}"
+                                               ItemTemplate="{StaticResource OutlookSectionTemplate}"
+                                               MinimizedButtonContent="{Binding RelativeSource={RelativeSource Self}, Path=SelectedItem.Name}"/>
+                    </telerik:RadPane>
+                </telerik:RadPaneGroup>
+            </telerik:RadSplitContainer>
+            <telerik:RadSplitContainer Width="545">
+                <telerik:RadPaneGroup IsContentPreserved="True">
+                    <telerik:RadPane Header="E-mails" CanUserClose="False" CanUserPin="False">
+                        <Grid Margin="10">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <telerik:RadWatermarkTextBox x:Name="SearchWatermarkTextBox" WatermarkContent="Search Current Mailbox" />
+                                <Path Data="M8.4,1.9 C6.5,1.9 4.9,3.5 4.9,5.5 C4.9,7.4 6.5,9 8.4,9 C10.4,9 11.9,7.4 11.9,5.5 C11.9,3.5 10.4,1.9 8.4,1.9 z M8.4,0 C11.5,-8.7E-08 13.9,2.4 13.9,5.5 C13.9,8.5 11.5,11 8.4,11 C7.3,11 6.2,10.6 5.4,10.0 L5.3,10.0 L1.4,13.9 L0,12.5 L3.9,8.6 L3.9,8.5 C3.3,7.6 2.9,6.6 2.9,5.5 C2.9,2.4 5.4,-8.7E-08 8.4,0 z" Fill="#FF767676" Margin="0 5 5 5" Stretch="Fill" StrokeThickness="2" HorizontalAlignment="Right" Width="14" Height="14" />
+                            </Grid>
+                            <StackPanel Grid.Row="1" Orientation="Horizontal">
+                                <telerik:RadRadioButton Content="All"
+                                                        IsBackgroundVisible="False"
+                                                        Margin="0 5 5 5"
+                                                        IsChecked="True"
+                                                        Command="{Binding ViewAllEmailsCommand}"
+                                                        GroupName="EmailStatus"
+                                                        BorderThickness="0"
+                                                        AutomationProperties.AutomationId="tabAllEmails" />
+                                <telerik:RadRadioButton Content="Unread"
+                                                        IsBackgroundVisible="False"
+                                                        Margin="0 5 5 5"
+                                                        Command="{Binding ViewUnreadEmailsCommand}"
+                                                        GroupName="EmailStatus"
+                                                        BorderThickness="0"
+                                                        AutomationProperties.AutomationId="tabUnreadEmails" />
+                            </StackPanel>
+                            <telerik:RadBusyIndicator x:Name="BusyIndicator" Grid.Row="2">
+                                <telerik:RadGridView x:Name="gridView"
+                                                     ItemsSource="{Binding SelectedOutlookSection.SelectedItem.Emails}"
+                                                     RowStyleSelector="{StaticResource RowStyleSelector}"
+                                                     SelectedItem="{Binding SelectedEmail, Mode=TwoWay}"
+                                                     IsSynchronizedWithCurrentItem="True"
+                                                     GroupRenderMode="Flat"
+                                                     AutoExpandGroups="True"
+                                                     AutoGenerateColumns="False"
+                                                     local:CustomFilterBehavior.TextBox="{Binding ElementName=SearchWatermarkTextBox}"                                                   
+                                                     RowIndicatorVisibility="Collapsed"
+                                                     CanUserFreezeColumns="False"
+                                                     IsReadOnly="True"
+                                                     ColumnWidth="*">
+                                    <telerik:RadContextMenu.ContextMenu>
+                                        <telerik:RadContextMenu x:Name="GridContextMenu">
+                                            <telerik:EventToCommandBehavior.EventBindings>
+                                                <telerik:EventBinding Command="{Binding OpenedCommand}" EventName="Opened" PassEventArgsToCommand="True" />
+                                            </telerik:EventToCommandBehavior.EventBindings>
+                                            <telerik:RadContextMenu.Items>
+                                                <telerik:RadMenuItem Header="Reply" Command="{Binding ReplyCommand}" />
+                                                <telerik:RadMenuItem Header="Reply All" Command="{Binding ReplyAllCommand}" />
+                                                <telerik:RadMenuItem Header="Forward" Command="{Binding ForwardCommand}" />
+                                                <telerik:RadMenuItem IsSeparator="True" />
+                                                <telerik:RadMenuItem Header="Mark as Unread" Command="{Binding MarkUnreadCommand}" />
+                                            </telerik:RadContextMenu.Items>
+                                        </telerik:RadContextMenu>
+                                    </telerik:RadContextMenu.ContextMenu>
+                                    <telerik:RadGridView.Columns>
+                                        <telerik:GridViewDataColumn DataMemberBinding="{Binding Sender}" Header="From"/>
+                                        <telerik:GridViewDataColumn DataMemberBinding="{Binding Subject}" />
+                                        <telerik:GridViewDataColumn Header="Received" DataMemberBinding="{Binding Received}" />
+                                    </telerik:RadGridView.Columns>
+                                    <telerik:RadGridView.GroupDescriptors>
+                                        <telerik:ColumnGroupDescriptor Column="{Binding Columns[\Received\], ElementName=gridView}" SortDirection="Descending"/>
+                                    </telerik:RadGridView.GroupDescriptors>
+                                </telerik:RadGridView>
+                            </telerik:RadBusyIndicator>
+                        </Grid>
+                    </telerik:RadPane>
+                </telerik:RadPaneGroup>
+            </telerik:RadSplitContainer>
+        </telerik:RadDocking>
+
+        <telerik:RadRichTextBoxStatusBar Grid.Row="2" AssociatedRichTextBox="{Binding ElementName=editableRichTextBox, Mode=OneTime}"/>
+    </Grid>
+</UserControl>

@@ -1,0 +1,66 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net5.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <Configurations>Debug;Release;DebugNet5;ReleaseNet5</Configurations>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Images\all_categories.png" />
+    <None Remove="Images\blue_category.png" />
+    <None Remove="Images\Categorize.png" />
+    <None Remove="Images\complete.png" />
+    <None Remove="Images\Delete.png" />
+    <None Remove="Images\Discard.png" />
+    <None Remove="Images\email_16x16.png" />
+    <None Remove="Images\FollowUp.png" />
+    <None Remove="Images\Forward.png" />
+    <None Remove="Images\green_category.png" />
+    <None Remove="Images\Icon.ico" />
+    <None Remove="Images\mail_32x32.png" />
+    <None Remove="Images\NewEmail.png" />
+    <None Remove="Images\Popout.png" />
+    <None Remove="Images\ReadUnread.png" />
+    <None Remove="Images\red_category.png" />
+    <None Remove="Images\reminder.png" />
+    <None Remove="Images\Reply.png" />
+    <None Remove="Images\ReplyAll.png" />
+    <None Remove="Images\today.png" />
+    <None Remove="Images\tomorrow.png" />
+    <None Remove="Images\Undo.png" />
+    <None Remove="Images\week.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Telerik.UI.for.Wpf.50.Xaml.Trial" Version="2021.1.325" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Images\all_categories.png" />
+    <Resource Include="Images\blue_category.png" />
+    <Resource Include="Images\Categorize.png" />
+    <Resource Include="Images\complete.png" />
+    <Resource Include="Images\Delete.png" />
+    <Resource Include="Images\Discard.png" />
+    <Resource Include="Images\email_16x16.png" />
+    <Resource Include="Images\FollowUp.png" />
+    <Resource Include="Images\Forward.png" />
+    <Resource Include="Images\green_category.png" />
+    <Resource Include="Images\Icon.ico" />
+    <Resource Include="Images\mail_32x32.png" />
+    <Resource Include="Images\NewEmail.png" />
+    <Resource Include="Images\Popout.png" />
+    <Resource Include="Images\ReadUnread.png" />
+    <Resource Include="Images\red_category.png" />
+    <Resource Include="Images\reminder.png" />
+    <Resource Include="Images\Reply.png" />
+    <Resource Include="Images\ReplyAll.png" />
+    <Resource Include="Images\today.png" />
+    <Resource Include="Images\tomorrow.png" />
+    <Resource Include="Images\Undo.png" />
+    <Resource Include="Images\week.png" />
+  </ItemGroup>
+
+</Project>
